@@ -1,0 +1,155 @@
+/* Top Citizens Styles */
+
+.top-citizens {
+    padding: var(--spacing-lg);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-xl);
+    color: var(--text-primary);
+}
+
+/* Podium */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl) 0;
+}
+
+.podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.podium-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-glow);
+}
+
+.podium-item.rank-1 {
+    order: 2;
+    padding-bottom: var(--spacing-2xl);
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.1), var(--bg-card));
+    border-color: #fbbf24;
+}
+
+.podium-item.rank-2 {
+    order: 1;
+    padding-bottom: var(--spacing-lg);
+    background: linear-gradient(180deg, rgba(156, 163, 175, 0.1), var(--bg-card));
+    border-color: #9ca3af;
+}
+
+.podium-item.rank-3 {
+    order: 3;
+    background: linear-gradient(180deg, rgba(205, 124, 50, 0.1), var(--bg-card));
+    border-color: #cd7c32;
+}
+
+.podium-avatar {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.podium-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-xs);
+}
+
+.podium-score {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-light);
+}
+
+.podium-mobility {
+    font-size: 1.25rem;
+    margin-top: var(--spacing-sm);
+}
+
+/* Citizens List */
+.citizens-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.citizen-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.citizen-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--primary);
+}
+
+.citizen-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-surface);
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.citizen-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.citizen-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.citizen-id {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.citizen-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.citizen-score {
+    font-weight: 600;
+    color: var(--secondary);
+}
+
+.citizen-mobility {
+    font-size: 1.25rem;
+}
+
+.citizen-consultations {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

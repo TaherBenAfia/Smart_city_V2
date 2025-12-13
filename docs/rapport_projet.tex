@@ -1,0 +1,663 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{er,positioning,shapes}
+
+\geometry{margin=2.5cm}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{
+    \textbf{PROJET DE MODULE}\\
+    \vspace{0.5cm}
+    \Large Smart City Analytics Platform\\
+    \large Plateforme Intelligente de Gestion des Données Urbaines\\
+    \vspace{1cm}
+    \normalsize Neo-Sousse 2030
+}
+
+\author{
+    Section : IA2\\
+    \vspace{0.5cm}
+    Université de Sousse\\
+    École Nationale d'Ingénieurs de Sousse\\
+    Département d'Informatique Appliquée
+}
+
+\date{Année Universitaire 2025/2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{Introduction}
+%==============================================================================
+
+Ce rapport présente la conception et l'implémentation d'une plateforme de gestion des données urbaines pour la métropole \textbf{Neo-Sousse 2030}. L'objectif est de collecter, analyser et visualiser les données IoT pour améliorer la qualité de vie des citoyens et réduire l'empreinte écologique.
+
+\subsection{Contexte et Enjeux}
+Face à la croissance démographique et aux défis environnementaux, la métropole Neo-Sousse s'est engagée dans une transformation digitale. Cette plateforme permet de :
+\begin{itemize}
+    \item Gérer les capteurs IoT (qualité de l'air, trafic, énergie, déchets, éclairage)
+    \item Suivre les interventions de maintenance
+    \item Analyser l'engagement des citoyens
+    \item Optimiser les trajets des véhicules autonomes
+\end{itemize}
+
+\subsection{Stack Technique}
+\begin{itemize}
+    \item \textbf{SGBD} : MySQL (relationnel, conformité ACID)
+    \item \textbf{Backend} : Python Django + Django REST Framework
+    \item \textbf{Frontend} : React.js (interface basique)
+    \item \textbf{ETL} : Scripts Python intégrés
+\end{itemize}
+
+%==============================================================================
+\section{Partie A : Modélisation Théorique}
+%==============================================================================
+
+%------------------------------------------------------------------------------
+\subsection{Modélisation Conceptuelle - Diagramme E/A}
+%------------------------------------------------------------------------------
+
+Le diagramme Entité-Association ci-dessous représente l'ensemble des besoins fonctionnels du système.
+
+\subsubsection{Entités Identifiées}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Entité} & \textbf{Identifiant} & \textbf{Description} \\
+\hline
+ARRONDISSEMENT & id & Zones géographiques de la métropole \\
+\hline
+PROPRIETAIRE & id & Propriétaires des capteurs (municipalité ou privé) \\
+\hline
+CAPTEUR & uuid & Capteurs IoT déployés dans la ville \\
+\hline
+MESURE & id & Relevés collectés par les capteurs \\
+\hline
+TECHNICIEN & id & Personnel de maintenance \\
+\hline
+INTERVENTION & id & Opérations de maintenance sur les capteurs \\
+\hline
+CITOYEN & id & Citoyens engagés dans la démarche écologique \\
+\hline
+CONSULTATION & id & Historique des consultations de données \\
+\hline
+VEHICULE & id & Véhicules autonomes municipaux \\
+\hline
+TRAJET & id & Trajets effectués par les véhicules \\
+\hline
+\end{tabular}
+\caption{Liste des entités du système}
+\end{table}
+
+\subsubsection{Diagramme E/A}
+
+\begin{center}
+\begin{tikzpicture}[
+    entity/.style={rectangle, draw, fill=blue!20, minimum width=2.5cm, minimum height=0.8cm},
+    relationship/.style={diamond, draw, fill=green!20, aspect=2},
+    attribute/.style={ellipse, draw, fill=yellow!20, font=\small}
+]
+
+% Entités principales
+\node[entity] (arr) at (0,8) {ARRONDISSEMENT};
+\node[entity] (prop) at (6,8) {PROPRIETAIRE};
+\node[entity] (cap) at (3,5) {CAPTEUR};
+\node[entity] (mes) at (0,2) {MESURE};
+\node[entity] (tech) at (9,5) {TECHNICIEN};
+\node[entity] (inter) at (6,2) {INTERVENTION};
+\node[entity] (cit) at (12,8) {CITOYEN};
+\node[entity] (cons) at (12,5) {CONSULTATION};
+\node[entity] (veh) at (0,-1) {VEHICULE};
+\node[entity] (traj) at (4,-1) {TRAJET};
+
+% Relations
+\node[relationship] (r1) at (1.5,6.5) {localise};
+\node[relationship] (r2) at (4.5,6.5) {possède};
+\node[relationship] (r3) at (1.5,3.5) {génère};
+\node[relationship] (r4) at (4.5,3.5) {concerne};
+\node[relationship] (r5) at (7.5,3.5) {intervient};
+\node[relationship] (r6) at (8,3) {valide};
+\node[relationship] (r7) at (12,6.5) {effectue};
+\node[relationship] (r8) at (2,-1) {réalise};
+
+% Connexions
+\draw (arr) -- (r1) -- (cap);
+\draw (prop) -- (r2) -- (cap);
+\draw (cap) -- (r3) -- (mes);
+\draw (cap) -- (r4) -- (inter);
+\draw (tech) -- (r5) -- (inter);
+\draw (tech) -- (r6) -- (inter);
+\draw (cit) -- (r7) -- (cons);
+\draw (veh) -- (r8) -- (traj);
+
+\end{tikzpicture}
+\end{center}
+
+%------------------------------------------------------------------------------
+\subsection{Cardinalités et Contraintes}
+%------------------------------------------------------------------------------
+
+\subsubsection{Cardinalités des Associations}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Association} & \textbf{Entité 1} & \textbf{Entité 2} & \textbf{Justification} \\
+\hline
+ARRONDISSEMENT-CAPTEUR & (1,1) & (0,n) & Un capteur est dans un seul arrondissement \\
+\hline
+PROPRIETAIRE-CAPTEUR & (1,1) & (0,n) & Un capteur a un seul propriétaire \\
+\hline
+CAPTEUR-MESURE & (1,1) & (0,n) & Une mesure provient d'un seul capteur \\
+\hline
+CAPTEUR-INTERVENTION & (1,1) & (0,n) & Une intervention concerne un capteur \\
+\hline
+TECHNICIEN-INTERVENTION & (1,1) & (0,n) & Intervenant obligatoire \\
+\hline
+TECHNICIEN-INTERVENTION & (1,1) & (0,n) & Validateur obligatoire \\
+\hline
+CITOYEN-CONSULTATION & (1,1) & (0,n) & Une consultation est faite par un citoyen \\
+\hline
+VEHICULE-TRAJET & (1,1) & (0,n) & Un trajet est effectué par un véhicule \\
+\hline
+\end{tabular}
+\caption{Cardinalités des associations}
+\end{table}
+
+\subsubsection{Contrainte Métier Critique}
+
+\begin{center}
+\fbox{
+\parbox{0.8\textwidth}{
+\textbf{Règle Métier :} Chaque intervention nécessite \textbf{au moins deux techniciens différents} :
+\begin{itemize}
+    \item Un \textbf{technicien intervenant} qui effectue l'opération
+    \item Un \textbf{technicien validateur} (humain ou système IA) qui valide
+\end{itemize}
+\textbf{Contrainte :} $technicien\_intervenant\_id \neq technicien\_validateur\_id$
+}}
+\end{center}
+
+%------------------------------------------------------------------------------
+\subsection{Modèle Relationnel Normalisé}
+%------------------------------------------------------------------------------
+
+\subsubsection{Schéma Relationnel}
+
+\textbf{ARRONDISSEMENT} (\underline{id}, nom, code\_postal, superficie\_km2, population)
+
+\textbf{PROPRIETAIRE} (\underline{id}, nom, type, contact\_email, contact\_telephone, adresse)
+
+\textbf{CAPTEUR} (\underline{uuid}, type, latitude, longitude, statut, date\_installation, description, \#proprietaire\_id, \#arrondissement\_id)
+
+\textbf{MESURE} (\underline{id}, \#capteur\_uuid, timestamp, valeurs, indice\_pollution, qualite\_air)
+
+\textbf{TECHNICIEN} (\underline{id}, matricule, nom, prenom, email, telephone, specialite, type\_validation, actif)
+
+\textbf{INTERVENTION} (\underline{id}, \#capteur\_uuid, date\_heure, nature, description, duree\_minutes, cout, reduction\_co2, statut, \#technicien\_intervenant\_id, \#technicien\_validateur\_id)
+
+\textbf{CITOYEN} (\underline{id}, identifiant\_unique, nom, prenom, email, telephone, date\_naissance, adresse, score\_engagement, preference\_mobilite, notifications\_actives)
+
+\textbf{CONSULTATION} (\underline{id}, \#citoyen\_id, timestamp, type\_donnee, zone\_consultee, duree\_consultation\_secondes, source\_consultation)
+
+\textbf{VEHICULE} (\underline{id}, plaque, type, energie, marque, modele, annee\_mise\_service, capacite\_passagers, autonomie\_km, statut)
+
+\textbf{TRAJET} (\underline{id}, \#vehicule\_id, origine, destination, depart, arrivee, distance\_km, economie\_co2, nombre\_passagers, statut)
+
+\vspace{0.5cm}
+\textit{Légende : \underline{clé primaire}, \#clé étrangère}
+
+%------------------------------------------------------------------------------
+\subsection{Analyse des Redondances}
+%------------------------------------------------------------------------------
+
+\subsubsection{Redondances Potentielles Identifiées}
+
+\begin{enumerate}
+    \item \textbf{Nom de l'arrondissement dans CAPTEUR} : Évitée en utilisant une clé étrangère vers ARRONDISSEMENT au lieu de stocker le nom directement.
+    
+    \item \textbf{Coordonnées du propriétaire dans CAPTEUR} : Évitée par la relation avec PROPRIETAIRE.
+    
+    \item \textbf{Informations technicien dans INTERVENTION} : Évitée par les clés étrangères vers TECHNICIEN.
+\end{enumerate}
+
+\subsubsection{Solutions Appliquées}
+
+Toutes les redondances ont été éliminées par :
+\begin{itemize}
+    \item Création de tables de référence (ARRONDISSEMENT, PROPRIETAIRE, TECHNICIEN)
+    \item Utilisation de clés étrangères pour les associations
+    \item Séparation des données temporelles (MESURE, TRAJET) des données de référence
+\end{itemize}
+
+%------------------------------------------------------------------------------
+\subsection{Dépendances Fonctionnelles}
+%------------------------------------------------------------------------------
+
+\subsubsection{Graphe Minimal des Dépendances Fonctionnelles}
+
+\textbf{Table CAPTEUR :}
+\begin{align*}
+uuid &\rightarrow type, latitude, longitude, statut, date\_installation, description \\
+uuid &\rightarrow proprietaire\_id, arrondissement\_id
+\end{align*}
+
+\textbf{Table INTERVENTION :}
+\begin{align*}
+id &\rightarrow capteur\_uuid, date\_heure, nature, description \\
+id &\rightarrow duree\_minutes, cout, reduction\_co2, statut \\
+id &\rightarrow technicien\_intervenant\_id, technicien\_validateur\_id
+\end{align*}
+
+\textbf{Table MESURE :}
+\begin{align*}
+id &\rightarrow capteur\_uuid, timestamp, valeurs, indice\_pollution, qualite\_air
+\end{align*}
+
+\textbf{Table CITOYEN :}
+\begin{align*}
+id &\rightarrow identifiant\_unique, nom, prenom, email, ... \\
+identifiant\_unique &\rightarrow id \quad \text{(dépendance réciproque)}\\
+email &\rightarrow id \quad \text{(email unique)}
+\end{align*}
+
+\textbf{Table TRAJET :}
+\begin{align*}
+id &\rightarrow vehicule\_id, origine, destination, depart, arrivee \\
+id &\rightarrow distance\_km, economie\_co2, nombre\_passagers, statut
+\end{align*}
+
+%------------------------------------------------------------------------------
+\subsection{Clés et Identifiants}
+%------------------------------------------------------------------------------
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Table} & \textbf{Clé Primaire} & \textbf{Clés Candidates / Uniques} \\
+\hline
+ARRONDISSEMENT & id & code\_postal (UNIQUE) \\
+\hline
+PROPRIETAIRE & id & - \\
+\hline
+CAPTEUR & uuid & - \\
+\hline
+MESURE & id & - \\
+\hline
+TECHNICIEN & id & matricule (UNIQUE) \\
+\hline
+INTERVENTION & id & - \\
+\hline
+CITOYEN & id & identifiant\_unique (UNIQUE), email (UNIQUE) \\
+\hline
+CONSULTATION & id & - \\
+\hline
+VEHICULE & id & plaque (UNIQUE) \\
+\hline
+TRAJET & id & - \\
+\hline
+\end{tabular}
+\caption{Clés primaires et candidates}
+\end{table}
+
+\subsubsection{Clés Étrangères}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Table} & \textbf{Clé Étrangère} & \textbf{Référence} \\
+\hline
+CAPTEUR & proprietaire\_id & PROPRIETAIRE(id) \\
+\hline
+CAPTEUR & arrondissement\_id & ARRONDISSEMENT(id) \\
+\hline
+MESURE & capteur\_uuid & CAPTEUR(uuid) \\
+\hline
+INTERVENTION & capteur\_uuid & CAPTEUR(uuid) \\
+\hline
+INTERVENTION & technicien\_intervenant\_id & TECHNICIEN(id) \\
+\hline
+INTERVENTION & technicien\_validateur\_id & TECHNICIEN(id) \\
+\hline
+CONSULTATION & citoyen\_id & CITOYEN(id) \\
+\hline
+TRAJET & vehicule\_id & VEHICULE(id) \\
+\hline
+\end{tabular}
+\caption{Clés étrangères du système}
+\end{table}
+
+%------------------------------------------------------------------------------
+\subsection{Formes Normales}
+%------------------------------------------------------------------------------
+
+\subsubsection{Vérification de la 1ère Forme Normale (1FN)}
+
+\textbf{Critères :}
+\begin{itemize}
+    \item[$\checkmark$] Toutes les colonnes contiennent des valeurs atomiques
+    \item[$\checkmark$] Pas de groupes répétitifs
+    \item[$\checkmark$] Chaque table possède une clé primaire
+\end{itemize}
+
+\textbf{Exemple :} Les coordonnées GPS sont séparées en deux colonnes (latitude, longitude) au lieu d'un seul champ "position".
+
+\subsubsection{Vérification de la 2ème Forme Normale (2FN)}
+
+\textbf{Critères :}
+\begin{itemize}
+    \item[$\checkmark$] Respect de la 1FN
+    \item[$\checkmark$] Tous les attributs non-clés dépendent entièrement de la clé primaire
+\end{itemize}
+
+\textbf{Analyse :} Aucune table n'a de clé primaire composée, donc la 2FN est automatiquement respectée.
+
+\subsubsection{Vérification de la 3ème Forme Normale (3FN)}
+
+\textbf{Critères :}
+\begin{itemize}
+    \item[$\checkmark$] Respect de la 2FN
+    \item[$\checkmark$] Aucune dépendance transitive
+\end{itemize}
+
+\textbf{Exemples de conformité :}
+\begin{itemize}
+    \item Le nom de l'arrondissement n'est pas stocké dans CAPTEUR (évite nom $\rightarrow$ code\_postal)
+    \item Les coordonnées du propriétaire ne sont pas dans CAPTEUR
+    \item Le nom du technicien n'est pas répété dans INTERVENTION
+\end{itemize}
+
+\begin{center}
+\fbox{\textbf{Conclusion : Toutes les tables sont en 3FN}}
+\end{center}
+
+%------------------------------------------------------------------------------
+\subsection{Décomposition BCNF (Boyce-Codd Normal Form)}
+%------------------------------------------------------------------------------
+
+\subsubsection{Analyse BCNF}
+
+Une table est en BCNF si pour toute dépendance fonctionnelle $X \rightarrow Y$, X est une super-clé.
+
+\textbf{Vérification table CITOYEN :}
+\begin{itemize}
+    \item $id \rightarrow$ tous les attributs $\checkmark$ (id est clé primaire)
+    \item $identifiant\_unique \rightarrow id$ $\checkmark$ (identifiant\_unique est clé candidate)
+    \item $email \rightarrow id$ $\checkmark$ (email est clé candidate)
+\end{itemize}
+
+\textbf{Vérification table INTERVENTION :}
+\begin{itemize}
+    \item $id \rightarrow$ tous les attributs $\checkmark$ (id est clé primaire)
+    \item Pas de dépendance partielle
+\end{itemize}
+
+\begin{center}
+\fbox{\textbf{Conclusion : Toutes les tables respectent la BCNF}}
+\end{center}
+
+Aucune décomposition supplémentaire n'est nécessaire car le schéma initial a été conçu en respectant directement la BCNF.
+
+%==============================================================================
+\section{Partie B : Implémentation Pratique}
+%==============================================================================
+
+%------------------------------------------------------------------------------
+\subsection{Scripts SQL de Génération des Tables}
+%------------------------------------------------------------------------------
+
+\subsubsection{Création de la Base de Données}
+
+\begin{lstlisting}[language=SQL]
+CREATE DATABASE IF NOT EXISTS smart_city_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE smart_city_db;
+\end{lstlisting}
+
+\subsubsection{Table ARRONDISSEMENT}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE arrondissement (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    code_postal VARCHAR(10) NOT NULL UNIQUE,
+    superficie_km2 DECIMAL(10, 2),
+    population INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\subsubsection{Table CAPTEUR}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE capteur (
+    uuid CHAR(36) PRIMARY KEY,
+    type ENUM('AIR', 'TRAFIC', 'ENERGIE', 'DECHETS', 'ECLAIRAGE') NOT NULL,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    statut ENUM('ACTIF', 'MAINTENANCE', 'HORS_SERVICE') DEFAULT 'ACTIF',
+    date_installation DATE NOT NULL,
+    proprietaire_id INT NOT NULL,
+    arrondissement_id INT NOT NULL,
+    
+    FOREIGN KEY (proprietaire_id) REFERENCES proprietaire(id),
+    FOREIGN KEY (arrondissement_id) REFERENCES arrondissement(id)
+);
+\end{lstlisting}
+
+\subsubsection{Table INTERVENTION avec Contrainte 2 Techniciens}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE intervention (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    capteur_uuid CHAR(36) NOT NULL,
+    date_heure DATETIME NOT NULL,
+    nature ENUM('PREDICTIVE', 'CORRECTIVE', 'CURATIVE') NOT NULL,
+    duree_minutes INT NOT NULL,
+    cout DECIMAL(10, 2) DEFAULT 0,
+    reduction_co2 DECIMAL(10, 4),
+    statut ENUM('PLANIFIEE', 'EN_COURS', 'TERMINEE', 'ANNULEE'),
+    
+    -- Contrainte: 2 techniciens obligatoires
+    technicien_intervenant_id INT NOT NULL,
+    technicien_validateur_id INT NOT NULL,
+    
+    FOREIGN KEY (capteur_uuid) REFERENCES capteur(uuid),
+    FOREIGN KEY (technicien_intervenant_id) REFERENCES technicien(id),
+    FOREIGN KEY (technicien_validateur_id) REFERENCES technicien(id),
+    
+    -- Contrainte: techniciens differents
+    CONSTRAINT chk_techniciens_differents 
+        CHECK (technicien_intervenant_id != technicien_validateur_id)
+);
+\end{lstlisting}
+
+%------------------------------------------------------------------------------
+\subsection{Vues et Requêtes Métiers}
+%------------------------------------------------------------------------------
+
+\subsubsection{Question 1 : Zones les plus polluées (24h)}
+
+\begin{lstlisting}[language=SQL]
+SELECT 
+    a.nom AS arrondissement,
+    AVG(m.indice_pollution) AS pollution_moyenne,
+    COUNT(m.id) AS nombre_mesures
+FROM arrondissement a
+JOIN capteur c ON a.id = c.arrondissement_id
+JOIN mesure m ON c.uuid = m.capteur_uuid
+WHERE c.type = 'AIR'
+  AND m.timestamp >= NOW() - INTERVAL 24 HOUR
+GROUP BY a.id
+ORDER BY pollution_moyenne DESC;
+\end{lstlisting}
+
+\subsubsection{Question 2 : Taux de disponibilité par arrondissement}
+
+\begin{lstlisting}[language=SQL]
+SELECT 
+    a.nom AS arrondissement,
+    COUNT(*) AS total_capteurs,
+    SUM(CASE WHEN c.statut = 'ACTIF' THEN 1 ELSE 0 END) AS actifs,
+    ROUND(SUM(CASE WHEN c.statut = 'ACTIF' THEN 1 ELSE 0 END) 
+          * 100.0 / COUNT(*), 2) AS taux_disponibilite
+FROM arrondissement a
+JOIN capteur c ON a.id = c.arrondissement_id
+GROUP BY a.id;
+\end{lstlisting}
+
+\subsubsection{Question 3 : Citoyens les plus engagés}
+
+\begin{lstlisting}[language=SQL]
+SELECT 
+    c.identifiant_unique,
+    CONCAT(c.prenom, ' ', c.nom) AS nom_complet,
+    c.score_engagement,
+    c.preference_mobilite,
+    COUNT(co.id) AS nombre_consultations
+FROM citoyen c
+LEFT JOIN consultation co ON c.id = co.citoyen_id
+GROUP BY c.id
+ORDER BY c.score_engagement DESC
+LIMIT 10;
+\end{lstlisting}
+
+\subsubsection{Question 4 : Interventions prédictives ce mois}
+
+\begin{lstlisting}[language=SQL]
+SELECT 
+    COUNT(*) AS nombre_interventions,
+    SUM(reduction_co2) AS economie_co2_totale,
+    SUM(cout) AS cout_total
+FROM intervention
+WHERE nature = 'PREDICTIVE'
+  AND statut = 'TERMINEE'
+  AND MONTH(date_heure) = MONTH(CURRENT_DATE)
+  AND YEAR(date_heure) = YEAR(CURRENT_DATE);
+\end{lstlisting}
+
+\subsubsection{Question 5 : Trajets avec meilleure réduction CO2}
+
+\begin{lstlisting}[language=SQL]
+SELECT 
+    v.plaque,
+    v.type AS type_vehicule,
+    v.energie,
+    t.origine,
+    t.destination,
+    t.distance_km,
+    t.economie_co2
+FROM trajet t
+JOIN vehicule v ON t.vehicule_id = v.id
+WHERE t.statut = 'TERMINE'
+ORDER BY t.economie_co2 DESC
+LIMIT 20;
+\end{lstlisting}
+
+%------------------------------------------------------------------------------
+\subsection{Jeux de Données}
+%------------------------------------------------------------------------------
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Entité} & \textbf{Nombre d'enregistrements} \\
+\hline
+Arrondissements & 5 \\
+Propriétaires & 4 \\
+Techniciens & 10 \\
+Capteurs & 50 \\
+Citoyens & 30 \\
+Véhicules & 20 \\
+Mesures & 500 \\
+Interventions & 100 \\
+Trajets & 200 \\
+Consultations & 325 \\
+\hline
+\end{tabular}
+\caption{Volume des données de test}
+\end{table}
+
+%------------------------------------------------------------------------------
+\subsection{API REST (Backend Django)}
+%------------------------------------------------------------------------------
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Méthode} & \textbf{Endpoint} & \textbf{Description} \\
+\hline
+GET & /api/capteurs/ & Liste des capteurs \\
+GET & /api/capteurs/zones\_polluees\_24h/ & Zones polluées \\
+GET & /api/capteurs/disponibilite\_par\_arrondissement/ & Taux disponibilité \\
+GET & /api/interventions/ & Liste des interventions \\
+GET & /api/citoyens/top\_engages/ & Top citoyens \\
+GET & /api/trajets/top\_trajets\_co2/ & Meilleurs trajets CO2 \\
+\hline
+\end{tabular}
+\caption{Endpoints API principaux}
+\end{table}
+
+%------------------------------------------------------------------------------
+\subsection{Scripts ETL}
+%------------------------------------------------------------------------------
+
+\begin{lstlisting}[language=Python]
+# Commande Django pour generer les donnees
+python manage.py seed_data    # Donnees initiales
+python manage.py run_etl      # Mesures, interventions, trajets
+\end{lstlisting}
+
+%==============================================================================
+\section{Conclusion}
+%==============================================================================
+
+Ce projet a permis de concevoir et implémenter une plateforme complète de gestion des données urbaines respectant :
+
+\begin{enumerate}
+    \item Une \textbf{modélisation conceptuelle} rigoureuse (diagramme E/A)
+    \item Un \textbf{schéma relationnel normalisé} en 3FN/BCNF
+    \item Des \textbf{contraintes d'intégrité} fortes (FK, CHECK, UNIQUE)
+    \item La \textbf{contrainte métier} des 2 techniciens par intervention
+    \item Des \textbf{requêtes analytiques} répondant aux questions métiers
+    \item Une \textbf{API REST} complète avec Django
+\end{enumerate}
+
+\end{document}

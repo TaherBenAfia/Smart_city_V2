@@ -1,0 +1,108 @@
+/* Dashboard Styles */
+
+.dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: capitalize;
+}
+
+/* Chart Card */
+.chart-card {
+    min-height: 350px;
+}
+
+.chart-container {
+    margin-top: var(--spacing-lg);
+}
+
+/* Score Bar */
+.score-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 120px;
+}
+
+.score-bar {
+    position: relative;
+    width: 100px;
+    height: 8px;
+    background: var(--bg-surface);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.score-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.score-text {
+    position: absolute;
+    right: -35px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Rank Badge */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    border-radius: 50%;
+}
+
+tr:nth-child(1) .rank-badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+tr:nth-child(2) .rank-badge {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+}
+
+tr:nth-child(3) .rank-badge {
+    background: linear-gradient(135deg, #cd7c32, #b8662b);
+}
+
+/* Recharts Customization */
+.recharts-text {
+    fill: var(--text-secondary) !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+    stroke: var(--border-color);
+}
+
+.recharts-tooltip-wrapper {
+    outline: none;
+}
+
+.recharts-default-tooltip {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+}
+
+.recharts-default-legend {
+    margin-top: var(--spacing-md) !important;
+}
