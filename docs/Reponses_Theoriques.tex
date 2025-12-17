@@ -1,0 +1,147 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, calc}
+\usepackage{float}
+
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+\title{\textbf{Feuille de Réponses - Projet Base de Données}\\Smart City Neo-Sousse 2030}
+\author{Étudiant: [Votre Nom] \\ Module: BDD Relationnelles}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{A. Partie Théorique}
+
+\subsection*{1. Modélisation Conceptuelle (Diagramme Entité-Association)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.7,
+    transform shape,
+    entity/.style={rectangle, draw=black, thick, minimum width=2cm, minimum height=0.8cm, align=center, font=\small},
+    relation/.style={diamond, draw=black, thick, aspect=2, minimum width=1.2cm, align=center, font=\small},
+    attribute/.style={ellipse, draw=black, minimum width=1.2cm, align=center, font=\small},
+    link/.style={-, thick}
+]
+% Entités
+\node[entity] (arrond) {ARRONDISSEMENT};
+\node[entity] (capteur) [below=4cm of arrond] {CAPTEUR};
+\node[entity] (proprio) [left=4cm of capteur] {PROPRIETAIRE};
+\node[entity] (mesure) [below=4cm of capteur] {MESURE};
+\node[entity] (interv) [right=4cm of capteur] {INTERVENTION};
+\node[entity] (tech) [right=4cm of interv] {TECHNICIEN};
+% Relations
+\node[relation] (loc) at ($(arrond)!0.5!(capteur)$) {Localise};
+\node[relation] (possede) at ($(proprio)!0.5!(capteur)$) {Possede};
+\node[relation] (genere) at ($(capteur)!0.5!(mesure)$) {Genere};
+\node[relation] (subit) at ($(capteur)!0.5!(interv)$) {Subit};
+\node[relation] (effectue) at ($(interv)!0.5!(tech)$) {Effectue};
+% Liens & Cardinalités
+\draw[link] (arrond) -- node[right, font=\footnotesize] {1,n} (loc);
+\draw[link] (loc) -- node[right, font=\footnotesize] {1,1} (capteur);
+\draw[link] (proprio) -- node[above, font=\footnotesize] {1,n} (possede);
+\draw[link] (possede) -- node[above, font=\footnotesize] {1,1} (capteur);
+\draw[link] (capteur) -- node[right, font=\footnotesize] {1,n} (genere);
+\draw[link] (genere) -- node[right, font=\footnotesize] {1,1} (mesure);
+\draw[link] (capteur) -- node[above, font=\footnotesize] {1,n} (subit);
+\draw[link] (subit) -- node[above, font=\footnotesize] {1,1} (interv);
+\draw[link] (interv) -- node[above, font=\footnotesize] {1,1} (effectue);
+\draw[link] (effectue) -- node[above, font=\footnotesize] {1,n} (tech);
+\end{tikzpicture}
+
+\end{figure}
+
+\subsection*{2. Cardinalités et Contraintes}
+\begin{itemize}
+    \item \textbf{Propriétaire - Capteur (1,n)} : Un propriétaire peut posséder plusieurs capteurs, mais un capteur appartient à un seul propriétaire unique.
+    \item \textbf{Arrondissement - Capteur (1,n)} : Un capteur est installé dans un seul arrondissement précis. Un arrondissement contient de nombreux capteurs.
+    \item \textbf{Intervention - Technicien} : 
+    \begin{itemize}
+        \item Cardinalité (1,n) vers Technicien pour l'intervenant.
+        \item Cardinalité (1,n) vers Technicien pour le validateur.
+        \item \textbf{Contrainte d'Intégrité} : Le technicien intervenant doit être strictement différent du technicien validateur ($id\_intervenant \neq id\_validateur$).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Modèle Relationnel Normalisé}
+Le schéma relationnel dérivé du diagramme E/A est le suivant :
+
+\begin{itemize}
+    \item \textbf{ARRONDISSEMENT} (\underline{id}, nom, code\_postal, superficie\_km2, population)
+    \item \textbf{PROPRIETAIRE} (\underline{id}, nom, type, contact\_email, contact\_tel)
+    \item \textbf{VEHICULE} (\underline{id}, plaque, type, energie, marque, modele, capacite)
+    \item \textbf{CAPTEUR} (\underline{uuid}, type, latitude, longitude, statut, date\_install, \#arrond\_id, \#proprio\_id)
+    \item \textbf{INTERVENTION} (\underline{id}, \#capteur\_uuid, date\_heure, nature, duree\_minutes, cout, reduction\_co2, \#tech\_interv\_id, \#tech\_valid\_id)
+\end{itemize}
+
+\subsection*{4. Graphes des Dépendances Fonctionnelles (DF)}
+Pour chaque relation, nous illustrons les dépendances fonctionnelles atomiques :
+
+\subsubsection*{Relation CAPTEUR}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    attribute/.style={rectangle, draw=black, rounded corners, minimum height=0.6cm, align=center, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[attribute] (uuid) {\underline{uuid}};
+    \node[attribute] (attr) [right=2cm of uuid] {type, latitude, longitude, statut, date\_install};
+    \node[attribute] (fks) [below=1cm of attr] {arrond\_id, proprio\_id};
+
+    \draw[arrow] (uuid) -- (attr);
+    \draw[arrow] (uuid) |- (fks);
+\end{tikzpicture}
+\end{center}
+
+\subsubsection*{Relation VEHICULE}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    attribute/.style={rectangle, draw=black, rounded corners, minimum height=0.6cm, align=center, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[attribute] (id) {\underline{id}};
+    \node[attribute] (plaque) [right=2cm of id] {plaque};
+    \node[attribute] (attr) [below=1cm of plaque] {type, energie, marque, modele};
+
+    \draw[arrow] (id) -- (plaque);
+    \draw[arrow] (id) |- (attr);
+    \draw[arrow] (plaque) -- (attr) node[midway, right] {DF Transitive (Si plaque est clé candidate)};
+\end{tikzpicture}
+\end{center}
+
+\subsubsection*{Relation INTERVENTION}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    attribute/.style={rectangle, draw=black, rounded corners, minimum height=0.6cm, align=center, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+    \node[attribute] (id) {\underline{id}};
+    \node[attribute] (details) [right=2cm of id] {date, nature, duree, cout};
+    \node[attribute] (refs) [below=1cm of details] {capteur\_uuid, tech\_intervenant, tech\_validateur};
+
+    \draw[arrow] (id) -- (details);
+    \draw[arrow] (id) |- (refs);
+\end{tikzpicture}
+\end{center}
+
+\subsection*{4. Analyse des Redondances et Normalisation}
+\begin{itemize}
+    \item \textbf{1FN}: Tous les attributs sont atomiques.
+    \item \textbf{2FN}: Toutes les tables ont une clé primaire simple, ou dépendent de toute la clé.
+    \item \textbf{3FN}: Pas de dépendance transitive (ex: adresse proprio dans table Proprietaire).
+    \item Le schéma est en 3FN/BCNF.
+\end{itemize}
+
+\end{document}

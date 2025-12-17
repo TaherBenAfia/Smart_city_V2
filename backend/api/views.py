@@ -9,6 +9,9 @@ from django.db.models import Avg, Count, Sum, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import viewsets, views, status
+from rest_framework.response import Response
+from django.db import connection
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -61,7 +64,20 @@ class CapteurViewSet(viewsets.ModelViewSet):
     def zones_polluees_24h(self, request):
         """
         Endpoint: Quelles sont les zones les plus polluées (24 dernières heures)?
-        Retourne les arrondissements classés par indice de pollution moyen
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            arr.nom, 
+            AVG(m.indice_pollution) as pollution_moyenne,
+            COUNT(m.id) as nombre_mesures
+        FROM api_arrondissement arr
+        JOIN api_capteur c ON arr.id = c.arrondissement_id
+        JOIN api_mesure m ON c.uuid = m.capteur_id
+        WHERE c.type = 'AIR' 
+          AND m.timestamp >= NOW() - INTERVAL 24 HOUR
+        GROUP BY arr.id
+        ORDER BY pollution_moyenne DESC;
+        -------------------------------
         """
         depuis = timezone.now() - timedelta(hours=24)
         
@@ -98,7 +114,7 @@ class CapteurViewSet(viewsets.ModelViewSet):
             'depuis': depuis.isoformat(),
             'zones': data
         })
-    
+
     def _get_niveau_pollution(self, indice):
         """Détermine le niveau de pollution selon l'indice"""
         if indice is None:
@@ -117,6 +133,18 @@ class CapteurViewSet(viewsets.ModelViewSet):
     def disponibilite_par_arrondissement(self, request):
         """
         Endpoint: Quel est le taux de disponibilité des capteurs par arrondissement?
+
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            arr.nom,
+            COUNT(c.uuid) as total,
+            SUM(CASE WHEN c.statut='ACTIF' THEN 1 ELSE 0 END) as actifs,
+            (SUM(CASE WHEN c.statut='ACTIF' THEN 1 ELSE 0 END) / COUNT(c.uuid)) * 100 as taux
+        FROM api_arrondissement arr
+        LEFT JOIN api_capteur c ON arr.id = c.arrondissement_id
+        GROUP BY arr.id
+        HAVING total > 0;
+        -------------------------------
         """
         stats = Arrondissement.objects.annotate(
             total_capteurs=Count('capteurs'),
@@ -149,7 +177,18 @@ class CapteurViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def stats_par_type(self, request):
-        """Statistiques des capteurs par type"""
+        """
+        Statistiques des capteurs par type
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            type,
+            COUNT(*) as total,
+            SUM(CASE WHEN statut='ACTIF' THEN 1 ELSE 0 END) as actifs
+        FROM api_capteur
+        GROUP BY type;
+        -------------------------------
+        """
         stats = Capteur.objects.values('type').annotate(
             total=Count('uuid'),
             actifs=Count('uuid', filter=Q(statut='ACTIF')),
@@ -196,7 +235,18 @@ class InterventionViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def stats_impact_environnemental(self, request):
-        """Statistiques sur l'impact environnemental des interventions"""
+        """
+        Statistiques sur l'impact environnemental des interventions
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            COUNT(api.id) as total_interventions,
+            SUM(reduction_co2) as total_reduction_co2,
+            SUM(cout) as cout_total
+        FROM api_intervention api
+        WHERE statut = 'TERMINEE';
+        -------------------------------
+        """
         stats = Intervention.objects.filter(
             statut='TERMINEE'
         ).aggregate(
@@ -224,6 +274,16 @@ class InterventionViewSet(viewsets.ModelViewSet):
         """
         Question 4: Combien d'interventions prédictives ont été réalisées 
         ce mois-ci, et quelle économie ont-elles générée?
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            COUNT(i.id) as nombre,
+            SUM(i.reduction_co2) as economie_co2
+        FROM api_intervention i
+        WHERE i.nature = 'PREDICTIVE'
+          AND i.statut = 'TERMINEE'
+          AND i.date_heure BETWEEN '2024-12-01' AND '2024-12-31';
+        -------------------------------
         """
         from datetime import date
         
@@ -339,6 +399,16 @@ class TrajetViewSet(viewsets.ModelViewSet):
         """
         Endpoint: Quels trajets ont le plus réduit le CO2?
         Retourne les trajets classés par économie CO2
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            t.origine, t.destination, v.plaque, t.economie_co2
+        FROM api_trajet t
+        JOIN api_vehicule v ON t.vehicule_id = v.id
+        WHERE t.statut = 'TERMINE'
+        ORDER BY t.economie_co2 DESC
+        LIMIT 20;
+        -------------------------------
         """
         limit = int(request.query_params.get('limit', 20))
         
@@ -372,7 +442,20 @@ class TrajetViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def stats_par_vehicule(self, request):
-        """Statistiques des trajets par véhicule"""
+        """
+        Statistiques des trajets par véhicule
+        
+        -- ESTIMATION SQL EQUIVALENT --
+        SELECT 
+            v.plaque, 
+            COUNT(t.id) as nombre_trajets,
+            SUM(t.economie_co2) as total_co2
+        FROM api_vehicule v
+        LEFT JOIN api_trajet t ON v.id = t.vehicule_id
+        WHERE t.statut = 'TERMINE'
+        GROUP BY v.id;
+        -------------------------------
+        """
         stats = Vehicule.objects.annotate(
             nombre_trajets=Count('trajets', filter=Q(trajets__statut='TERMINE')),
             total_distance=Sum('trajets__distance_km', filter=Q(trajets__statut='TERMINE')),

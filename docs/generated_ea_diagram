@@ -1,0 +1,92 @@
+// Smart City Neo-Sousse 2030
+digraph {
+	rankdir=bt size=10
+	node [fillcolor=white shape=record style=filled]
+	edge [arrowhead=none arrowtail=none]
+	ARRONDISSEMENT [label="{ARRONDISSEMENT|
+    <id> id (PK)|
+    nom|
+    code_postal|
+    superficie_km2|
+    population
+    }"]
+	PROPRIETAIRE [label="{PROPRIETAIRE|
+    <id> id (PK)|
+    nom|
+    type|
+    contact_email|
+    contact_tel
+    }"]
+	CAPTEUR [label="{CAPTEUR|
+    <uuid> uuid (PK)|
+    type|
+    latitude|
+    longitude|
+    statut|
+    date_install|
+    <arrond> arrond_id (FK)|
+    <proprio> proprio_id (FK)
+    }"]
+	MESURE [label="{MESURE|
+    <id> id (PK)|
+    <capteur> capteur_uuid (FK)|
+    timestamp|
+    valeurs|
+    indice_pollut|
+    qualite_air
+    }"]
+	TECHNICIEN [label="{TECHNICIEN|
+    <id> id (PK)|
+    matricule|
+    nom|
+    prenom|
+    specialite|
+    type_validation
+    }"]
+	INTERVENTION [label="{INTERVENTION|
+    <id> id (PK)|
+    <capteur> capteur_uuid (FK)|
+    date_heure|
+    nature|
+    duree_minutes|
+    cout|
+    reduction_co2|
+    <tech1> tech_interv_id (FK)|
+    <tech2> tech_valid_id (FK)
+    }"]
+	CITOYEN [label="{CITOYEN|
+    <id> id (PK)|
+    identifiant|
+    nom, prenom|
+    email|
+    score_engagem
+    }"]
+	CONSULTATION [label="{CONSULTATION|
+    <id> id (PK)|
+    <citoyen> citoyen_id (FK)|
+    timestamp|
+    type_donnee|
+    zone_consultee
+    }"]
+	VEHICULE [label="{VEHICULE|
+    <id> id (PK)|
+    plaque|
+    type|
+    energie
+    }"]
+	TRAJET [label="{TRAJET|
+    <id> id (PK)|
+    <vehicule> vehicule_id (FK)|
+    origine, dest|
+    depart, arrivee|
+    economie_co2
+    }"]
+	ARRONDISSEMENT -> CAPTEUR [label="1,n" headlabel="1,1"]
+	PROPRIETAIRE -> CAPTEUR [label="1,n" headlabel="1,1"]
+	CAPTEUR -> MESURE [label="1,n"]
+	CAPTEUR -> INTERVENTION [label="1,n"]
+	TECHNICIEN -> INTERVENTION [label="Intervient (1,n)"]
+	TECHNICIEN -> INTERVENTION [label="Valide (1,n)" style=dashed]
+	CITOYEN -> CONSULTATION [label="1,n"]
+	VEHICULE -> TRAJET [label="1,n"]
+}
