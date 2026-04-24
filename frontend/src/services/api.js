@@ -78,4 +78,37 @@ export const techniciensAPI = {
     getById: (id) => api.get(`/techniciens/${id}/`),
 };
 
+// ============================================
+// Nouveaux modules académiques
+// ============================================
+
+// Compilateur NL → SQL
+export const compilerAPI = {
+    query: (queryText) => api.post('/compiler/query/', { query: queryText }),
+    getExamples: () => api.get('/compiler/query/'),
+};
+
+// Automates à États Finis
+export const automataAPI = {
+    transition: (entityType, entityId, event) => api.post('/automata/transition/', {
+        entity_type: entityType,
+        entity_id: entityId,
+        event: event,
+    }),
+    getState: (entityType, entityId) => api.get(`/automata/state/${entityType}/${entityId}/`),
+    getHistory: (entityType, entityId) => api.get(`/automata/history/${entityType}/${entityId}/`),
+    getAlerts: () => api.get('/automata/alerts/'),
+    getDefinitions: () => api.get('/automata/definitions/'),
+};
+
+// Rapports IA
+export const aiReportsAPI = {
+    generateReport: (reportType, date) => api.post('/ai/report/', {
+        report_type: reportType,
+        date: date || '',
+    }),
+    suggest: (capteurId) => api.post('/ai/suggest/', { capteur_id: capteurId }),
+    getHistory: () => api.get('/ai/history/'),
+};
+
 export default api;

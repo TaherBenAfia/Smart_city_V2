@@ -1,0 +1,117 @@
+.automata-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    padding: 1rem 2rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--text);
+    background: var(--bg);
+}
+
+.tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.entity-selector {
+    background: var(--bg);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2rem;
+}
+
+.entity-selector .input-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.entity-selector label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.entity-selector .input {
+    max-width: 300px;
+}
+
+.error-text {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    margin-left: 100px;
+}
+
+.diagram-section {
+    margin-bottom: 2rem;
+}
+
+.diagram-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.diagram-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 2rem;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.controls-section {
+    border-top: 1px dashed var(--border);
+    padding-top: 1.5rem;
+}
+
+.controls-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.events-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.history-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.history-card .card-title {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin: 0;
+}
+
+.history-table {
+    width: 100%;
+}

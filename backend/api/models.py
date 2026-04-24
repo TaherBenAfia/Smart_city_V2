@@ -70,7 +70,7 @@ class Capteur(models.Model):
         ('HORS_SERVICE', 'Hors service'),
     ]
     
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uuid = models.CharField(primary_key=True, max_length=36, editable=False)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     latitude = models.DecimalField(max_digits=10, decimal_places=8)
     longitude = models.DecimalField(max_digits=11, decimal_places=8)
@@ -101,7 +101,7 @@ class Mesure(models.Model):
         ('DANGEREUX', 'Dangereux'),
     ]
     
-    capteur = models.ForeignKey(Capteur, on_delete=models.CASCADE, related_name='mesures')
+    capteur = models.ForeignKey(Capteur, on_delete=models.CASCADE, related_name='mesures', db_column='capteur_uuid')
     timestamp = models.DateTimeField()
     valeurs = models.JSONField(help_text="Valeurs des mesures selon le type de capteur")
     indice_pollution = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True,
@@ -171,7 +171,7 @@ class Intervention(models.Model):
         ('ANNULEE', 'Annulée'),
     ]
     
-    capteur = models.ForeignKey(Capteur, on_delete=models.PROTECT, related_name='interventions')
+    capteur = models.ForeignKey(Capteur, on_delete=models.PROTECT, related_name='interventions', db_column='capteur_uuid')
     date_heure = models.DateTimeField()
     nature = models.CharField(max_length=20, choices=NATURE_CHOICES)
     description = models.TextField(blank=True, null=True)

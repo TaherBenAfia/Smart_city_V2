@@ -16,13 +16,16 @@ ProjetModuleBDD/
 │   │   ├── settings.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
-│   └── api/                # Application API
-│       ├── models.py       # Modèles Django
-│       ├── serializers.py  # Serializers DRF
-│       ├── views.py        # ViewSets avec analytics
-│       ├── urls.py
-│       ├── admin.py
-│       └── management/commands/run_etl.py
+│   ├── api/                # Application API
+│   ├── automata/           # Moteur d'Automates à États Finis (FSM)
+│   ├── compiler/           # Compilateur Langage Naturel vers SQL
+│   ├── ai_reports/         # Service de Génération de Rapports IA
+│   │   ├── models.py       # Modèles Django
+│   │   ├── serializers.py  # Serializers DRF
+│   │   ├── views.py        # ViewSets avec analytics
+│   │   ├── urls.py
+│   │   ├── admin.py
+│   │   └── management/commands/run_etl.py
 ├── frontend/
 │   ├── package.json
 │   ├── public/index.html
@@ -30,11 +33,14 @@ ProjetModuleBDD/
 │       ├── App.jsx
 │       ├── index.js
 │       ├── services/api.js
-│       └── components/
-│           ├── Dashboard/
-│           ├── Interventions/
-│           ├── Citizens/
-│           └── Layout/
+│       ├── components/
+│       │   ├── Dashboard/
+│       │   ├── Interventions/
+│       │   ├── Citizens/
+│       │   ├── Layout/
+│       │   ├── Automata/   # Visualiseur SVG pour FSM
+│       │   ├── Compiler/   # Interface pour requêtes NL
+│       │   └── AIReports/  # Génération de rapports IA
 └── docs/
     └── powerbi_guide.md    # Guide Power BI
 ```
@@ -112,6 +118,9 @@ L'application sera disponible sur: http://localhost:3000/
 | `/api/interventions/` | CRUD Interventions |
 | `/api/trajets/top_trajets_co2/` | Top trajets CO2 |
 | `/api/citoyens/top_engages/` | Top citoyens engagés |
+| `/api/automata/` | Endpoints du Moteur FSM (Transitions & Historique) |
+| `/api/compiler/` | Traduction et exécution de requêtes NL |
+| `/api/ai/` | Génération de rapports avec LLM (OpenAI / Template) |
 | `/api/docs/` | Documentation Swagger |
 
 ---
@@ -140,6 +149,30 @@ Chaque intervention nécessite **2 techniciens différents**:
 Cette règle est implémentée:
 - SQL: Contrainte `CHECK (technicien_intervenant_id != technicien_validateur_id)`
 - Django: Validation dans `Intervention.clean()` et `InterventionSerializer.validate()`
+
+---
+
+## 🌟 V2.0 - Modules Académiques Avancés
+
+Dans la version 2.0, la plateforme a été enrichie avec 3 nouveaux modules académiques majeurs basés sur des concepts de compilation et d'intelligence artificielle :
+
+### 1. Compilateur Langage Naturel → SQL (`compiler/`)
+- **Lexer & Parser** codés from scratch en Python pur.
+- **AST (Abstract Syntax Tree)** générant des requêtes SQL dynamiques compatibles avec l'ORM et la base de données.
+- Permet aux utilisateurs d'interroger la base de données avec des phrases comme : *"Affiche les 5 zones les plus polluées"*.
+
+### 2. Moteur d'Automates FSM (`automata/`)
+- Moteur d'automates à états finis déterministes codé en Python.
+- Gère le cycle de vie complet de trois entités clés de la ville :
+  - **Capteurs** (`INACTIF → ACTIF → SIGNALE → EN_MAINTENANCE → HORS_SERVICE`)
+  - **Interventions** (`DEMANDE → TECH1_ASSIGNE → TECH2_VALIDE → IA_VALIDE → TERMINE`)
+  - **Véhicules** (`STATIONNE → EN_ROUTE → EN_PANNE → ARRIVE`)
+- Graphiques SVG générés dynamiquement dans le frontend pour visualiser l'état actuel et l'historique des transitions.
+
+### 3. Service de Rapports IA (`ai_reports/`)
+- Intégration de l'API OpenAI pour analyser les données de la ville et proposer des rapports textuels professionnels.
+- **Mode Fallback intelligent** (Offline/Template) garantissant le fonctionnement sans clé d'API.
+- Fonctionnalité de diagnostic et recommandations pour un équipement donné.
 
 ---
 

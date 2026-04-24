@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     'drf_spectacular',
     # Local
     'api',
+    'automata',
+    'compiler',
+    'ai_reports',
 ]
 
 MIDDLEWARE = [

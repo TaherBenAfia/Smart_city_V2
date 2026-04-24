@@ -1,108 +1,237 @@
-/* Dashboard Styles */
-
 .dashboard {
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.header-date {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    text-transform: capitalize;
-}
-
-/* Chart Card */
-.chart-card {
-    min-height: 350px;
-}
-
-.chart-container {
-    margin-top: var(--spacing-lg);
-}
-
-/* Score Bar */
-.score-bar {
     display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.dashboard-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.025em;
+}
+
+.dashboard-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.dashboard-main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.dashboard-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: var(--spacing-sm);
-    width: 120px;
+    margin-bottom: 1.5rem;
 }
 
-.score-bar {
-    position: relative;
-    width: 100px;
-    height: 8px;
-    background: var(--bg-surface);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.score-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    border-radius: 4px;
-    transition: width 0.3s ease;
-}
-
-.score-text {
-    position: absolute;
-    right: -35px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.75rem;
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--primary);
     font-weight: 600;
-    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
 }
 
-/* Rank Badge */
-.rank-badge {
-    display: inline-flex;
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* Donut Chart Customization */
+.donut-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.donut-center-text {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
+}
+
+.donut-percent {
+    font-size: 1.75rem;
     font-weight: 700;
-    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1;
+}
+
+.donut-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.progress-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.legend-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
+    margin-right: 0.75rem;
 }
 
-tr:nth-child(1) .rank-badge {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+.legend-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
-tr:nth-child(2) .rank-badge {
-    background: linear-gradient(135deg, #9ca3af, #6b7280);
+.legend-value {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
 }
 
-tr:nth-child(3) .rank-badge {
-    background: linear-gradient(135deg, #cd7c32, #b8662b);
+/* Listes */
+.citoyens-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-/* Recharts Customization */
-.recharts-text {
-    fill: var(--text-secondary) !important;
+.citoyen-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    transition: background 0.2s;
 }
 
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-    stroke: var(--border-color);
+.citoyen-item:hover {
+    background: var(--primary-bg);
 }
 
-.recharts-tooltip-wrapper {
-    outline: none;
+.citoyen-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 1rem;
 }
 
-.recharts-default-tooltip {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: var(--radius-md) !important;
+.citoyen-info {
+    flex: 1;
 }
 
-.recharts-default-legend {
-    margin-top: var(--spacing-md) !important;
+.citoyen-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+}
+
+.citoyen-score {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.citoyen-rank {
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Loading */
+.dashboard-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+    gap: 1rem;
+}
+
+.dashboard-loading h2 {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+@media (max-width: 1280px) {
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 }

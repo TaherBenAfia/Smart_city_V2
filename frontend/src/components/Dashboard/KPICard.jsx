@@ -1,23 +1,28 @@
 /**
- * KPICard - Composant réutilisable pour afficher les KPIs
+ * KPICard - Composant réutilisable pour afficher les KPIs (Style Donezo)
  */
 
 import React from 'react';
 import './KPICard.css';
 
-const KPICard = ({ title, value, change, changeType, icon, color }) => {
+const KPICard = ({ title, value, change, changeType, icon }) => {
     return (
-        <div className={`kpi-card card ${color ? `kpi-${color}` : ''}`}>
-            <div className="card-header">
-                <span className="card-title">{title}</span>
+        <div className="kpi-card card">
+            <div className="kpi-header">
+                <span className="kpi-title">{title}</span>
                 {icon && <span className="kpi-icon">{icon}</span>}
             </div>
-            <div className="kpi-value">{value}</div>
-            {change !== undefined && (
-                <span className={`kpi-change ${changeType || 'positive'}`}>
-                    {changeType === 'positive' ? '↑' : changeType === 'negative' ? '↓' : '→'} {change}
-                </span>
-            )}
+            <div className="kpi-body">
+                <div className="kpi-value">{value}</div>
+                {change !== undefined && (
+                    <div className={`kpi-change ${changeType || 'neutral'}`}>
+                        <span className="change-arrow">
+                            {changeType === 'positive' ? '↗' : changeType === 'negative' ? '↘' : '→'}
+                        </span>
+                        <span>{change} vs mois dernier</span>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

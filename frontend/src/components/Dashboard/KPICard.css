@@ -1,70 +1,70 @@
-/* KPI Card Styles */
-
 .kpi-card {
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
 }
 
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
+.kpi-card:nth-child(1) {
+    border-top: 4px solid var(--primary);
 }
 
-.kpi-card.kpi-green::before {
-    background: linear-gradient(90deg, #10b981, #34d399);
+.kpi-card:nth-child(2) {
+    border-top: 4px solid var(--info);
 }
 
-.kpi-card.kpi-blue::before {
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+.kpi-card:nth-child(3) {
+    border-top: 4px solid var(--purple);
 }
 
-.kpi-card.kpi-orange::before {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+.kpi-card:nth-child(4) {
+    border-top: 4px solid var(--warning);
 }
 
-.kpi-card.kpi-red::before {
-    background: linear-gradient(90deg, #ef4444, #f87171);
+.kpi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.kpi-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .kpi-icon {
-    font-size: 1.5rem;
-    opacity: 0.7;
+    font-size: 1.25rem;
+    opacity: 0.8;
+}
+
+.kpi-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .kpi-value {
-    font-size: 2.25rem;
+    font-size: 2rem;
     font-weight: 700;
-    color: var(--text-primary);
-    margin: var(--spacing-sm) 0;
-    line-height: 1.2;
+    color: var(--text);
+    line-height: 1.1;
 }
 
 .kpi-change {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 0.875rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
+    gap: 0.25rem;
+    font-size: 0.75rem;
     font-weight: 500;
 }
 
-.kpi-change.positive {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
+.change-arrow {
+    font-weight: 800;
 }
 
-.kpi-change.negative {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-}
-
-.kpi-change.neutral {
-    background: rgba(148, 163, 184, 0.15);
-    color: #94a3b8;
-}
+.kpi-change.positive { color: var(--primary-dark); }
+.kpi-change.negative { color: var(--danger); }
+.kpi-change.neutral { color: var(--text-muted); }
